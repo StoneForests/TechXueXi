@@ -27,46 +27,59 @@ def article(userId, cookies, article_pointer, scores):
                     article_remain = const.article_num_all - scores["article_num"]
                     for i in range(article_pointer, article_pointer + article_remain):
                         driver_article.get_url(links[i])
+                        print(f"文章数量学 xi 中，当前article_index：{article_pointer + i}，try_count：{try_count}，文章剩余{article_pointer + article_remain - i}篇")
                         readarticle_time = 60 + random.randint(5, 15)
                         for j in range(readarticle_time):
                             if random.random() > 0.5:
                                 driver_article.go_js('window.scrollTo(0, document.body.scrollHeight/120*{})'.format(j))
-                            print("\r文章数量学 xi 中，文章剩余{}篇,本篇剩余时间{}秒".format(article_pointer + article_remain - i, readarticle_time - j), end="")
+                            # print("文章数量学 xi 中，文章剩余{}篇,本篇剩余时间{}秒".format(article_pointer + article_remain - i, readarticle_time - j), end="")
                             time.sleep(1)
                         driver_article.go_js('window.scrollTo(0, document.body.scrollHeight)')
                         total, scores = show_score(cookies)
                         if scores["article_num"] >= const.article_num_all:
-                            print("检测到文章数量分数已满,退出学 xi ")
+                            print(f"检测到文章数量分数已满,退出学 xi ，当前Index: {article_pointer}")
                             break
                     article_pointer += article_remain
+                    try_count += 1
+                    user.save_article_index(userId, article_pointer)
                 else:
+                    if try_count < 10:
+                        print("文章数量学 xi 完成")
+                    else:
+                        print(f"文章数量学 xi 重试次数达到10次，请检查 user/article_video_index.json 文件记录")
                     user.save_article_index(userId, article_pointer)
                     break
             try_count = 0
             while True:
                 if scores["article_time"] < const.article_time_all and try_count < 10:
                     num_time = 60
-                    driver_article.get_url(links[article_pointer - 1])
+                    driver_article.get_url(links[article_pointer])
                     remaining = (const.article_time_all - scores["article_time"]) * 1 * num_time
                     for i in range(remaining):
                         if random.random() > 0.5:
                             driver_article.go_js(
                                 'window.scrollTo(0, document.body.scrollHeight/{}*{})'.format(remaining, i))
-                        print("\r文章时长学 xi 中，文章总时长剩余{}秒".format(remaining - i), end="")
+                        # print("文章时长学 xi 中，文章总时长剩余{}秒".format(remaining - i), end="")
                         time.sleep(1)
-                        if i % (60) == 0 and i != remaining:
+                        if i % (60) == 0:
+                            print(f"文章时长学 xi 中， 当前article_index：{article_pointer}，try_count：{try_count}，剩余时长{remaining-i}秒")
                             total, scores = show_score(cookies)
                             if scores["article_time"] >= const.article_time_all:
                                 print("检测到文章时长分数已满,退出学 xi ")
                                 break
                     driver_article.go_js('window.scrollTo(0, document.body.scrollHeight)')
                     total, scores = show_score(cookies)
+                    try_count += 1
                 else:
+                    if try_count < 10:
+                        print("文章时长学 xi 完成")
+                    else:
+                        print(f"文章时长学 xi 重试次数达到10次，请检查 user/article_video_index.json 文件记录")
                     break
-            if try_count < 10:
-                print("文章学 xi 完成")
-            else:
-                print("文章学 xi 出现异常，请检查 user/article_video_index.json 文件记录")
+            # if try_count < 10:
+            #     print("文章学 xi 完成")
+            # else:
+            #     print("文章学 xi 出现异常，请检查 user/article_video_index.json 文件记录")
             driver_article.quit()
         else:
             print("文章之前学完了")
@@ -92,11 +105,12 @@ def video(userId, cookies, video_pointer, scores):
                     v_num = const.video_num_all - scores["video_num"]
                     for i in range(video_pointer, video_pointer + v_num):
                         driver_video.get_url(links[i])
+                        print(f"视频数量学 xi 中，当前video_index：{video_pointer + i}，try_count：{try_count}，视频剩余{video_pointer + v_num - i}个")
                         watchvideo_time = 60 + random.randint(5, 15)
                         for j in range(watchvideo_time):
                             if random.random() > 0.5:
                                 driver_video.go_js('window.scrollTo(0, document.body.scrollHeight/180*{})'.format(j))
-                            print("\r视频数量学 xi 中，视频剩余{}个,本次剩余时间{}秒".format(video_pointer + v_num - i, watchvideo_time - j), end="")
+                            # print("视频数量学 xi 中，视频剩余{}个,本次剩余时间{}秒".format(video_pointer + v_num - i, watchvideo_time - j), end="")
                             time.sleep(1)
                         driver_video.go_js('window.scrollTo(0, document.body.scrollHeight)')
                         total, scores = show_score(cookies)
@@ -104,34 +118,46 @@ def video(userId, cookies, video_pointer, scores):
                             print("检测到视频数量分数已满,退出学 xi ")
                             break
                     video_pointer += v_num
+                    try_count += 1
+                    user.save_video_index(userId, video_pointer)
                 else:
+                    if try_count < 10:
+                        print("视频数量学 xi 完成")
+                    else:
+                        print(f"视频数量学 xi 重试次数达到10次，请检查 user/article_video_index.json 文件记录")
                     user.save_video_index(userId, video_pointer)
                     break
             try_count = 0
             while True:
                 if scores["video_time"] < const.video_time_all and try_count < 10:
                     num_time = 60
-                    driver_video.get_url(links[video_pointer - 1])
+                    driver_video.get_url(links[video_pointer])
                     remaining = (const.video_time_all - scores["video_time"]) * 1 * num_time
                     for i in range(remaining):
                         if random.random() > 0.5:
                             driver_video.go_js(
                                 'window.scrollTo(0, document.body.scrollHeight/{}*{})'.format(remaining, i))
-                        print("\r视频时长学 xi 中，视频总时长剩余{}秒".format(remaining - i), end="")
+                        # print("视频时长学 xi 中，视频总时长剩余{}秒".format(remaining - i), end="")
                         time.sleep(1)
                         if i % (60) == 0 and i != remaining:
+                            print(f"视频时长学 xi 中， 当前video_index：{video_pointer}，try_count：{try_count}，剩余时长{remaining-i}秒")
                             total, scores = show_score(cookies)
                             if scores["video_time"] >= const.video_time_all:
                                 print("检测到视频时长分数已满,退出学 xi ")
                                 break
                     driver_video.go_js('window.scrollTo(0, document.body.scrollHeight)')
                     total, scores = show_score(cookies)
+                    try_count += 1
                 else:
+                    if try_count < 10:
+                        print("视频时长学 xi 完成")
+                    else:
+                        print(f"视频时长学 xi 重试次数达到10次，请检查 user/article_video_index.json 文件记录")
                     break
-            if try_count < 10:
-                print("视频学 xi 完成")
-            else:
-                print("视频学 xi 出现异常，请检查 user/article_video_index.json 文件记录")
+            # if try_count < 10:
+            #     print("视频学 xi 完成")
+            # else:
+            #     print("视频学 xi 出现异常，请检查 user/article_video_index.json 文件记录")
             driver_video.quit()
         else:
             print("视频之前学完了")
